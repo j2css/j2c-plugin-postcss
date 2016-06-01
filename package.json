@@ -1,6 +1,6 @@
 {
   "name": "j2c-plugin-postcss",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A PostCSS adapter for j2c",
   "main": "src/index.js",
   "directories": {
