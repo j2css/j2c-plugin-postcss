@@ -1,5 +1,5 @@
 {
-  "name": "name",
+  "name": "j2c-plugin-postcss",
   "version": "0.0.0",
   "description": "A PostCSS adapter for j2c",
   "main": "src/index.js",
@@ -14,7 +14,9 @@
     "url": "https://github.com/j2css/j2c-plugin-postcss"
   },
   "keywords": [
-    "j2c", "plugin", "postcss"
+    "j2c",
+    "plugin",
+    "postcss"
   ],
   "author": "Pierre-Yves Gérardy",
   "license": "MIT",
