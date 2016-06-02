@@ -5,23 +5,24 @@ var j2cPostcss = require('../')
 
 var autoprefixer = require('autoprefixer')
 
-var plugin = j2cPostcss(postcss.plugin('plugin', function (opts) {
-    opts = opts || {};
-
-    // Work with options here
-
+var plugin = j2cPostcss(postcss.plugin('plugin', function () {
     return function (css, result) {
-
         css.walk(function(node){
             if (node.type === 'atrule' && node.params) node.params += 'WAT'
             if (node.type === 'rule') node.selector += ', .postcss'
             if (node.type === 'decl') node.value += 'ish'
         })
-
     };
 }));
 
-o('rudimentary first test', function(){
+o('modify inline styles', function(){
+    o(j2c()
+        .use(plugin)
+        .inline({color:'red'})
+    ).equals("color:redish;\n")
+})
+
+o('modify a full sheet', function(){
     o(j2c()
         .use(plugin)
         .sheet({
@@ -37,6 +38,7 @@ color:redish;\n\
 }\n"
     )
 })
+
 
 o('use autoprefixer to remove prefixes', function(){
     o(j2c().use(j2cPostcss(autoprefixer({ add: false, browsers: [] }))).sheet({'@global':{
@@ -54,5 +56,21 @@ color:pink;\n\
     )
 })
 
+o('use the $postcss field to concatenate plugins into as single postCSS processor', function(){
+    var plugins = {}
+    function makePlugin(name){
+        return j2cPostcss(postcss.plugin(name, function () {
+            return function(css, result){
+                plugins[name] = result.processor.plugins
+            }
+        }))
+    }
+    j2c().use(makePlugin('before'), plugin, makePlugin('after')).sheet({})
+    o(plugins.before).equals(plugins.after)
+    o(plugins.before[0].postcssPlugin).equals('before')
+    o(plugins.before[2].postcssPlugin).equals('after')
+})
+
+// ------------
 
 o.run()

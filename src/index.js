@@ -14,13 +14,19 @@ function unknownBlock(type){
 
 module.exports = function(plugin) {
 	return function(){
+		// cache the PostCSS processor. Its creation is delayed so that 
+		// more plugins can be added through $postcss
 		var processor
 
 		return {$filter: function(next) {
+			// combines successive `j2c-postcss-plugin`-based plugins for efficiency.
 			if (own.call(next,'$postcss')) return next.$postcss(plugin)
 
 			var plugins = [plugin]
 			var parent, root, done
+
+			// `handlers` and `block` turn the PostCSS tree into
+			// j2c streams after processing.
 
 			var handlers = {
 				atrule: function (node) {
@@ -57,6 +63,9 @@ module.exports = function(plugin) {
 				})
 			}
 
+			// These filters turn the streams into a PostCSS tree.
+			// Once done, `this.x()` turns back the tree into a
+			// series of streams.
 			return {
 				$postcss: function(plugin) {
 					plugins = [plugin].concat(plugins)
@@ -67,6 +76,20 @@ module.exports = function(plugin) {
 					root = parent
 					done = false
 					next.i()
+				},
+				x: function() {
+					if (!done) {
+						done = true
+						// initialize the processor if needed
+						processor = processor || postcss(plugins)
+						if (root !== parent) throw new Error("Missing '}'")
+						var options = {stringifier: function () {}}
+						var result = root.toResult(options)
+
+						// process and convert back to j2c streams
+						block(processor.process(result, options).root.nodes)
+					}
+					return next.x.apply(next, arguments)
 				},
 				a: function(rule, params, takesBlock) {
 					var node = {name: rule.slice(1)}
@@ -93,17 +116,6 @@ module.exports = function(plugin) {
 				},
 				S: function () {
 					parent = parent.parent
-				},
-				x: function(raw) {
-					if (!done) {
-						processor = processor || postcss(plugins)
-						if (root !== parent) throw new Error("Missing '}'")
-						var options = {stringifier: function () {}}
-						var result = root.toResult(options)
-						block(processor.process(result, options).root.nodes)
-						done = true
-					}
-					return next.x(raw)
 				}
 			}
 		}}
