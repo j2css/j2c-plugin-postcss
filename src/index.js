@@ -99,7 +99,7 @@ module.exports = function(plugin) {
 				},
 				d: function (prop, value) {
 					if (prop !== '') parent.push(postcss.decl({prop: prop, value: value}))
-					// serialize the 
+					// Use a custom property to pass raw declarations through the plugins unaltered
 					else parent.push(postcss.decl({prop: 'j2c-raw', value: 'j2c-raw', raws:{j2c: value}}))
 				},
 				s: function (selector) {

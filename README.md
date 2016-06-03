@@ -1,6 +1,6 @@
 # j2c-plugin-postcss
 
-Use PostCSS synchronous filters with [j2c](http://j2c.py.gy) v1.x. For server-side usage.
+Use [PostCSS](https://github.com/postcss/postcss) synchronous filters with [j2c](http://j2c.py.gy) v1.x. For server-side usage.
 
 Don't use this on the client side unless you want to bundle PostCSS itself with your app.
 
