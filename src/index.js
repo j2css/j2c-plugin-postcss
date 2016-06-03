@@ -40,7 +40,7 @@ module.exports = function(plugin) {
 				},
 				comment: function(){},
 				decl: function (node) {
-					if (own.call(node.raws, 'j2c')) next.d('', node.raws.j2c)
+					if (own.call(node, 'raws') && own.call(node.raws, 'j2c')) next.d('', node.raws.j2c)
 					else next.d(node.prop, node.value)
 				},
 				rule: function (node) {
