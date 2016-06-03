@@ -39,6 +39,23 @@ color:redish;\n\
     )
 })
 
+o('leave raw declatarion as is', function(){
+    o(j2c()
+        .use(plugin)
+        .sheet({
+            '@namespace': 'foo',
+            '@media bar':{p:'color:red'}
+        })
+    ).equals("\
+@namespace fooWAT;\n\
+@media barWAT {\n\
+p, .postcss {\n\
+color:red;\n\
+}\n\
+}\n"
+    )
+})
+
 
 o('use autoprefixer to remove prefixes', function(){
     o(j2c().use(j2cPostcss(autoprefixer({ add: false, browsers: [] }))).sheet({'@global':{

@@ -1,24 +1,20 @@
 var postcss = require('postcss')
 
-function n () {
-	var r=(Math.random()*0x100000000).toString(16)
-	return('00000000'+r).slice(r.length) // zero pad to 8 characters.
-}
-
-var token = n()+n()+n()+n()
-
 var own = {}.hasOwnProperty
+
 function unknownBlock(type){
 	throw new Error('j2c-plugin-postcss doesn\'t know how to handle PostCSS nodes of type "' + type + '".')
 }
 
 module.exports = function(plugin) {
 	return function(){
+
 		// cache the PostCSS processor. Its creation is delayed so that 
 		// more plugins can be added through $postcss
 		var processor
 
 		return {$filter: function(next) {
+
 			// combines successive `j2c-postcss-plugin`-based plugins for efficiency.
 			if (own.call(next,'$postcss')) return next.$postcss(plugin)
 
@@ -27,7 +23,6 @@ module.exports = function(plugin) {
 
 			// `handlers` and `block` turn the PostCSS tree into
 			// j2c streams after processing.
-
 			var handlers = {
 				atrule: function (node) {
 					if (node.nodes) {
@@ -43,12 +38,10 @@ module.exports = function(plugin) {
 						next.a('@'+node.name, node.params)
 					}
 				},
-				comment: function (node) {
-					// unserialize the preserved, raw declaration.
-					if (node.text.indexOf(token) === 0) next.d('', '', node.text.slice(32), ';\n')
-				},
+				comment: function(){},
 				decl: function (node) {
-					next.d(node.prop, node.value, ';\n')
+					if (own.call(node.raws, 'j2c')) next.d('', node.raws.j2c)
+					else next.d(node.prop, node.value)
 				},
 				rule: function (node) {
 					next.s(node.selector)
@@ -107,7 +100,7 @@ module.exports = function(plugin) {
 				d: function (prop, value) {
 					if (prop !== '') parent.push(postcss.decl({prop: prop, value: value}))
 					// serialize the 
-					else parent.push(postcss.comment({text: token + value}))
+					else parent.push(postcss.decl({prop: 'j2c-raw', value: 'j2c-raw', raws:{j2c: value}}))
 				},
 				s: function (selector) {
 					var rule = postcss.rule({selector: selector})
