@@ -1,3 +1,9 @@
+## /!\ Notice /!\
+
+This repos is now retired in favour of the `plugins/postcss` subdirectory of the `v1` branch of `j2c.
+
+---
+
 # j2c-plugin-postcss
 
 Use [PostCSS](https://github.com/postcss/postcss) synchronous filters with [j2c](http://j2c.py.gy) v1.x. For server-side usage.
