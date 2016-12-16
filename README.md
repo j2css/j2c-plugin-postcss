@@ -1,6 +1,6 @@
 ## /!\ Notice /!\
 
-This repos is now retired in favour of the `plugins/postcss` subdirectory of the `v1` branch of `j2c.
+This repos is now retired in favour of the `plugins/postcss` subdirectory of the `v1` branch of `j2c`.
 
 ---
 
